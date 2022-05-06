@@ -38,7 +38,7 @@ var tiles = (function () { // Array of Groups
 
 console.log(tiles)
 
-tile = tiles[11]
+tile = tiles[18]
 
 tile.fillColor = 'red';
 tile.position = new Point([100, 100]);
@@ -58,6 +58,9 @@ function onKeyDown(event) {
     }
     else if (event.key == 'd') {
       tile.rotate(90, mousePos);
+    }
+    else if (event.key == 's') {
+      tile.scale(-1, 1, mousePos);
     }
   }
 }
