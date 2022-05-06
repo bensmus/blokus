@@ -1,6 +1,6 @@
 // PAPERSCRIPT!
 
-var edgeSize = 30;
+var edgeSize = 15;
 
 var tiles = (function () { // Array of Groups
   // All Blokus tiles, each tile on new line
@@ -54,10 +54,10 @@ function onMouseMove(event) {
 function onKeyDown(event) {
   if (tile.contains(mousePos)) {
     if (event.key == 'a') {
-      tile.rotate(-90);
+      tile.rotate(-90, mousePos);
     }
     else if (event.key == 'd') {
-      tile.rotate(90);
+      tile.rotate(90, mousePos);
     }
   }
 }
