@@ -1,6 +1,6 @@
 // PAPERSCRIPT!
 
-var edgeSize = 10;
+var edgeSize = 30;
 
 var tiles = (function () { // Array of Groups
   // All Blokus tiles, each tile on new line
@@ -38,18 +38,26 @@ var tiles = (function () { // Array of Groups
 
 console.log(tiles)
 
-function rotateTile(tile, positive) {
-  var matrix;
-  if (positive) {
-    matrix = new Matrix(0, -1, 1, 0);
-  } else {
-    matrix = new Matrix(0, 1, -1, 0)
-  }
-  tile.transform(matrix)
+tile = tiles[11]
+
+tile.fillColor = 'red';
+tile.position = new Point([100, 100]);
+tile.onMouseDrag = function(event) {
+  tile.position += event.delta;
 }
 
-tiles[11].fillColor = 'red';
-tiles[11].position = new Point([100, 100]);
-tiles[11].onMouseDrag = function(event) {
-  tiles[11].position += event.delta;
+var mousePos;
+function onMouseMove(event) {
+  mousePos = event.point;
+}
+
+function onKeyDown(event) {
+  if (tile.contains(mousePos)) {
+    if (event.key == 'a') {
+      tile.rotate(-90);
+    }
+    else if (event.key == 'd') {
+      tile.rotate(90);
+    }
+  }
 }
