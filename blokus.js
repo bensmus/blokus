@@ -21,7 +21,7 @@ function drawBoard() {
 
   var board = new Group(boardPaths)
   board.strokeColor = 'gainsboro'
-  board.position = new Point([600, 450])
+  board.position = new Point([xMax / 2, yMax / 2])
 }
 
 drawBoard();
