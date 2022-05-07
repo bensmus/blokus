@@ -1,0 +1,4 @@
+- layers: make board grid on base layer
+- space to snap to grid and confirm placement
+- board state that gets updated
+- movement instructions for rotating (a,d) and mirroring (s) and snap to grid (space)
