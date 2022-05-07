@@ -2,6 +2,10 @@
 
 var edgeSize = 25;
 
+function getSnap(val, edgeSize) {
+  return edgeSize * Math.round(val / edgeSize)
+}
+
 function drawBoard() {
   var boardPaths = []
   for (var rowi = 0; rowi < 14; rowi++) {
@@ -81,7 +85,13 @@ view.onKeyDown = function (event) {
   
   if (event.key == 'space') {
     if (targetTile) {
-      console.log('gonna snap')
+      // x = 12.5 or 0.5, y = 12.5 or 0.5 means that the tile is centered
+      var tilePoint = targetTile.children[0].segments[0].point
+      var x = tilePoint.x;
+      var y = tilePoint.y;
+      var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
+      targetTile.translate(snapPoint - tilePoint);
+      console.log(tilePoint, snapPoint);
     }
     return false; // prevent default
   }
