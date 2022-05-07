@@ -1,6 +1,6 @@
 // PAPERSCRIPT!
 
-var edgeSize = 15;
+var edgeSize = 25;
 
 var tiles = (function () { // Array of Groups
   // All Blokus tiles, each tile on new line
@@ -65,7 +65,7 @@ function onKeyDown(event) {
 }
 
 function getSpawnPoint(tileIndex) {
-  var gridx = 7;
+  var gridx = 14;
   var colNumber = tileIndex % gridx;
   var rowNumber = Math.floor(tileIndex / gridx);
   var xCenter = colNumber * 5 * edgeSize + 2.5 * edgeSize;
@@ -73,6 +73,20 @@ function getSpawnPoint(tileIndex) {
   return new Point([xCenter, yCenter]);
 }
 
+// draw board
+var boardPaths = []
+for (var rowi = 0; rowi < 14; rowi++) {
+  for (var coli = 0; coli < 14; coli++) {
+    var topleft = new Point([coli * edgeSize, rowi * edgeSize])
+    boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
+  }
+}
+
+var board = new Group(boardPaths)
+board.strokeColor = 'gainsboro'
+board.position = new Point([600, 450])
+
+// spawn tiles and add mouse drag handler
 for (var tileIndex = 0; tileIndex < 21; tileIndex++) {
   var tile = tiles[tileIndex];
   tile.fillColor = 'red';
