@@ -2,6 +2,10 @@
 
 var edgeSize = 25;
 
+// keep everything inside these bounds
+var xMax = 1350;
+var yMax = 750;
+
 function getSnap(val, edgeSize) {
   return edgeSize * Math.round(val / edgeSize)
 }
@@ -114,10 +118,10 @@ view.onKeyDown = function (event) {
 }
 
 function getSpawnPoint(tileIndex) {
-  var gridx = 14;
+  var gridx = 4;
   var colNumber = tileIndex % gridx;
   var rowNumber = Math.floor(tileIndex / gridx);
-  var xCenter = colNumber * 5 * edgeSize + 2.5 * edgeSize;
+  var xCenter = colNumber * 3.5 * edgeSize + 1.5 * edgeSize;
   var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
   return new Point([xCenter, yCenter]);
 }
