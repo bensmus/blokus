@@ -2,6 +2,22 @@
 
 var edgeSize = 25;
 
+function drawBoard() {
+  var boardPaths = []
+  for (var rowi = 0; rowi < 14; rowi++) {
+    for (var coli = 0; coli < 14; coli++) {
+      var topleft = new Point([coli * edgeSize, rowi * edgeSize])
+      boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
+    }
+  }
+
+  var board = new Group(boardPaths)
+  board.strokeColor = 'gainsboro'
+  board.position = new Point([600, 450])
+}
+
+drawBoard();
+
 var tiles = (function () { // Array of Groups
   // All Blokus tiles, each tile on new line
   var tileStrings = [
@@ -43,19 +59,41 @@ function onMouseMove(event) {
   mousePos = event.point;
 }
 
+function rotateAnim(tile, pos) {
+  var counter = 0;
+  if (!view.onFrame) {
+    view.onFrame = function () {
+      if (pos) {
+        tile.rotate(5);
+      } else {
+        tile.rotate(-5);
+      }
+      counter++;
+      if (counter == 90 / 5) {
+        view.onFrame = undefined;
+      }
+    }
+  }
+}
 function onKeyDown(event) {
   var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
+  
+  if (event.key == 'space') {
+    if (targetTile) {
+      console.log('gonna snap')
+    }
+    return false; // prevent default
+  }
+
   if (targetTile) {
     if (event.key == 'a') {
-      targetTile.rotate(-90, mousePos);
+      rotateAnim(targetTile, false)
     }
     else if (event.key == 'd') {
-      targetTile.rotate(90, mousePos);
+      rotateAnim(targetTile, true)
     }
     else if (event.key == 's') {
-      console.log('escape preessed')
-
-      targetTile.scale(-1, 1, mousePos);
+      targetTile.scale(-1, 1);
     }
     else if (event.key == 'f') {
       var tileIndex = tiles.indexOf(targetTile);
@@ -72,19 +110,6 @@ function getSpawnPoint(tileIndex) {
   var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
   return new Point([xCenter, yCenter]);
 }
-
-// draw board
-var boardPaths = []
-for (var rowi = 0; rowi < 14; rowi++) {
-  for (var coli = 0; coli < 14; coli++) {
-    var topleft = new Point([coli * edgeSize, rowi * edgeSize])
-    boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
-  }
-}
-
-var board = new Group(boardPaths)
-board.strokeColor = 'gainsboro'
-board.position = new Point([600, 450])
 
 // spawn tiles and add mouse drag handler
 for (var tileIndex = 0; tileIndex < 21; tileIndex++) {
