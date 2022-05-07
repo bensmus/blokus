@@ -74,6 +74,3 @@ for (var i = 0; i < 21; i++) {
     this.position += event.delta;
   }
 }
-
-// var tile = tiles[1];
-// tile.fillColor = 'red'
