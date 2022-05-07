@@ -121,7 +121,7 @@ function getSpawnPoint(tileIndex) {
   var gridx = 4;
   var colNumber = tileIndex % gridx;
   var rowNumber = Math.floor(tileIndex / gridx);
-  var xCenter = colNumber * 3.5 * edgeSize + 1.5 * edgeSize;
+  var xCenter = colNumber * 3.5 * edgeSize + 2 * edgeSize;
   var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
   return new Point([xCenter, yCenter]);
 }
