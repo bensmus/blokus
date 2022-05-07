@@ -64,15 +64,15 @@ for (var i = 0; i < 21; i++) {
   var tile = tiles[i];
   var gridx = 7;
   tile.fillColor = 'red';
-  var x = i % gridx;
-  var y = Math.floor(i / gridx);
-  console.log(i, x, y)
-  tile.position = new Point( // makes center of tile 
-    [x * 5 * edgeSize + 2.5 * edgeSize, y * 5 * edgeSize + 2.5 * edgeSize]
-  )
-//   // tile.onMouseDrag = function (event) {
-//   //   tile.position += event.delta;
-//   // }
+  tile.strokeColor = 'black';
+  var colNumber = i % gridx;
+  var rowNumber = Math.floor(i / gridx);
+  var xCenter = colNumber * 5 * edgeSize + 2.5 * edgeSize;
+  var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
+  tile.position = new Point([xCenter, yCenter]);
+  tile.onMouseDrag = function (event) {
+    this.position += event.delta;
+  }
 }
 
 // var tile = tiles[1];
