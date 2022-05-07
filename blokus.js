@@ -38,8 +38,6 @@ var tiles = (function () { // Array of Groups
   return tileStrings.map(getTile);
 })();
 
-console.log(tiles)
-
 var mousePos;
 function onMouseMove(event) {
   mousePos = event.point;
@@ -55,21 +53,31 @@ function onKeyDown(event) {
       targetTile.rotate(90, mousePos);
     }
     else if (event.key == 's') {
+      console.log('escape preessed')
+
       targetTile.scale(-1, 1, mousePos);
+    }
+    else if (event.key == 'f') {
+      var tileIndex = tiles.indexOf(targetTile);
+      targetTile.position = getSpawnPoint(tileIndex);
     }
   }
 }
 
-for (var i = 0; i < 21; i++) {
-  var tile = tiles[i];
+function getSpawnPoint(tileIndex) {
   var gridx = 7;
-  tile.fillColor = 'red';
-  tile.strokeColor = 'black';
-  var colNumber = i % gridx;
-  var rowNumber = Math.floor(i / gridx);
+  var colNumber = tileIndex % gridx;
+  var rowNumber = Math.floor(tileIndex / gridx);
   var xCenter = colNumber * 5 * edgeSize + 2.5 * edgeSize;
   var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
-  tile.position = new Point([xCenter, yCenter]);
+  return new Point([xCenter, yCenter]);
+}
+
+for (var tileIndex = 0; tileIndex < 21; tileIndex++) {
+  var tile = tiles[tileIndex];
+  tile.fillColor = 'red';
+  tile.strokeColor = 'black';
+  tile.position = getSpawnPoint(tileIndex)
   tile.onMouseDrag = function (event) {
     this.position += event.delta;
   }
