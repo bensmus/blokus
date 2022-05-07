@@ -75,7 +75,8 @@ function rotateAnim(tile, pos) {
     }
   }
 }
-function onKeyDown(event) {
+
+view.onKeyDown = function (event) {
   var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
   
   if (event.key == 'space') {
