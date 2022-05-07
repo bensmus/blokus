@@ -27,24 +27,18 @@ var tiles = (function () { // Array of Groups
     "00,01,11,21,12",
     "10,01,11,21,12",
   ];
+
   var getTile = function (tileString) {
     var coorStrings = tileString.split(',');
     return new Group(coorStrings.map(function (coorString) {
-        return new Path.Rectangle(new Point(+coorString[0] * edgeSize, +coorString[1] * edgeSize), new Size(edgeSize, edgeSize));
+      return new Path.Rectangle(new Point(+coorString[0] * edgeSize, +coorString[1] * edgeSize), new Size(edgeSize, edgeSize));
     }));
   };
+
   return tileStrings.map(getTile);
 })();
 
 console.log(tiles)
-
-tile = tiles[18]
-
-tile.fillColor = 'red';
-tile.position = new Point([100, 100]);
-tile.onMouseDrag = function(event) {
-  tile.position += event.delta;
-}
 
 var mousePos;
 function onMouseMove(event) {
@@ -52,15 +46,34 @@ function onMouseMove(event) {
 }
 
 function onKeyDown(event) {
-  if (tile.contains(mousePos)) {
+  var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
+  if (targetTile) {
     if (event.key == 'a') {
-      tile.rotate(-90, mousePos);
+      targetTile.rotate(-90, mousePos);
     }
     else if (event.key == 'd') {
-      tile.rotate(90, mousePos);
+      targetTile.rotate(90, mousePos);
     }
     else if (event.key == 's') {
-      tile.scale(-1, 1, mousePos);
+      targetTile.scale(-1, 1, mousePos);
     }
   }
 }
+
+for (var i = 0; i < 21; i++) {
+  var tile = tiles[i];
+  var gridx = 7;
+  tile.fillColor = 'red';
+  var x = i % gridx;
+  var y = Math.floor(i / gridx);
+  console.log(i, x, y)
+  tile.position = new Point( // makes center of tile 
+    [x * 5 * edgeSize + 2.5 * edgeSize, y * 5 * edgeSize + 2.5 * edgeSize]
+  )
+//   // tile.onMouseDrag = function (event) {
+//   //   tile.position += event.delta;
+//   // }
+}
+
+// var tile = tiles[1];
+// tile.fillColor = 'red'
