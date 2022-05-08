@@ -1,5 +1,7 @@
 Make 2 player local MVP
-- CODING: drawAndGetTiles becomes drawTiles(getTiles(), 1), implement addListeners
+- CODING: have a currently selected tile, so that multiple rotates can be made without adjusting mouse, 
+  and so that you don't rotate tile that is "under" current. 
+- Trigger snapping by mouse release over board.
 - reorganize tile piles and make both colors, have turn markers
 - disable piece move when placed and when opponent's turn
 - board state that gets updated and validated
