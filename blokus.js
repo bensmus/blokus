@@ -11,6 +11,8 @@ view.onMouseMove = function(event) {
   mousePos = event.point;
 }
 
+var selectedTile = null;
+
 function drawBoard() {
   var boardPaths = []
   for (var rowi = 0; rowi < 14; rowi++) {
@@ -128,10 +130,20 @@ function addListeners(tiles) {
     }
   }
 
+  view.onMouseMove = function (event) {
+    if (selectedTile) {
+      selectedTile.position += event.delta;
+    }
+  }
+
   for (var tileIndex = 0; tileIndex < 42; tileIndex++) { // do for all tiles
     var tile = tiles[tileIndex];
-    tile.onMouseDrag = function (event) {
-      this.position += event.delta;
+    tile.onMouseDown = function() {
+      if (selectedTile == null) {
+        selectedTile = this;
+      } else {
+        selectedTile = null;
+      }
     }
     tile.onMouseUp = function() {
       var tilePoint = this.children[0].segments[0].point;
