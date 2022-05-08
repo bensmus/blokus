@@ -7,11 +7,12 @@ var xMax = 1350;
 var yMax = 750;
 
 var mousePos;
-view.onMouseMove = function(event) {
+view.on('mousemove', function(event) {
   mousePos = event.point;
-}
+});
 
 var selectedTile = null;
+var keydown = false;
 
 function drawBoard() {
   var boardPaths = []
@@ -102,7 +103,7 @@ function addListeners(tiles) {
         if (counter == 90 / 5) {
           view.onFrame = undefined;
         }
-      }
+      };
     }
   }
 
@@ -110,49 +111,58 @@ function addListeners(tiles) {
     return edgeSize * Math.round(val / edgeSize)
   }
 
-  view.onKeyDown = function (event) {
-    var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
+  view.on('keyup', function() {
+    keydown = false;
+  })
+  
+  view.on('keydown', function (event) {
+    if (!keydown) {
+      var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
 
-    if (targetTile) {
-      if (event.key == 'a') {
-        rotateAnim(targetTile, false)
+      if (targetTile) {
+        if (event.key == 'a') {
+          rotateAnim(targetTile, false)
+        }
+        else if (event.key == 'd') {
+          rotateAnim(targetTile, true)
+        }
+        else if (event.key == 's') {
+          if (!view.onFrame) {
+            targetTile.scale(-1, 1);
+          }
+        }
+        else if (event.key == 'f') {
+          var tileIndex = tiles.indexOf(targetTile);
+          targetTile.position = getSpawnPoint(tileIndex);
+        }
       }
-      else if (event.key == 'd') {
-        rotateAnim(targetTile, true)
-      }
-      else if (event.key == 's') {
-        targetTile.scale(-1, 1);
-      }
-      else if (event.key == 'f') {
-        var tileIndex = tiles.indexOf(targetTile);
-        targetTile.position = getSpawnPoint(tileIndex);
-      }
+      keydown = true;
     }
-  }
+  });
 
-  view.onMouseMove = function (event) {
+  view.on('mousemove', function (event) {
     if (selectedTile) {
       selectedTile.position += event.delta;
     }
-  }
+  });
 
   for (var tileIndex = 0; tileIndex < 42; tileIndex++) { // do for all tiles
     var tile = tiles[tileIndex];
     tile.onMouseDown = function() {
       if (selectedTile == null) {
         selectedTile = this;
+        console.log('selected tile')
       } else {
         selectedTile = null;
       }
     }
+
     tile.onMouseUp = function() {
       var tilePoint = this.children[0].segments[0].point;
-      console.log('tilePoint = ', tilePoint)
       var x = tilePoint.x;
       var y = tilePoint.y;
       var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
       this.translate(snapPoint - tilePoint);
-      console.log('snapPoint = ', snapPoint);
     }
   }
 }
