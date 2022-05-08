@@ -114,7 +114,7 @@ function addListeners(tiles) {
   view.on('keyup', function() {
     keydown = false;
   })
-  
+
   view.on('keydown', function (event) {
     if (!keydown) {
       var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
@@ -146,25 +146,21 @@ function addListeners(tiles) {
     }
   });
 
-  for (var tileIndex = 0; tileIndex < 42; tileIndex++) { // do for all tiles
-    var tile = tiles[tileIndex];
-    tile.onMouseDown = function() {
-      if (selectedTile == null) {
-        selectedTile = this;
-        console.log('selected tile')
-      } else {
-        selectedTile = null;
-      }
-    }
-
-    tile.onMouseUp = function() {
-      var tilePoint = this.children[0].segments[0].point;
+  view.on('mousedown', function () {
+    if (selectedTile) {
+      var tilePoint = selectedTile.children[0].segments[0].point;
       var x = tilePoint.x;
       var y = tilePoint.y;
       var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
-      this.translate(snapPoint - tilePoint);
+      selectedTile.translate(snapPoint - tilePoint);
+      selectedTile = null;
+      return;
     }
-  }
+    var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
+    if (targetTile) {
+      selectedTile = targetTile;
+    }
+  });
 }
 
 drawBoard();
