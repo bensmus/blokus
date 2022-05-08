@@ -110,18 +110,6 @@ function addListeners(tiles) {
 
   view.onKeyDown = function (event) {
     var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
-    
-    if (event.key == 'space') {
-      if (targetTile) {
-        var tilePoint = targetTile.children[0].segments[0].point
-        var x = tilePoint.x;
-        var y = tilePoint.y;
-        var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
-        targetTile.translate(snapPoint - tilePoint);
-        console.log(tilePoint, snapPoint);
-      }
-      return false; // prevent default
-    }
 
     if (targetTile) {
       if (event.key == 'a') {
@@ -144,6 +132,15 @@ function addListeners(tiles) {
     var tile = tiles[tileIndex];
     tile.onMouseDrag = function (event) {
       this.position += event.delta;
+    }
+    tile.onMouseUp = function() {
+      var tilePoint = this.children[0].segments[0].point;
+      console.log('tilePoint = ', tilePoint)
+      var x = tilePoint.x;
+      var y = tilePoint.y;
+      var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
+      this.translate(snapPoint - tilePoint);
+      console.log('snapPoint = ', snapPoint);
     }
   }
 }
