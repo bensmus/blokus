@@ -117,23 +117,21 @@ function addListeners(tiles) {
 
   view.on('keydown', function (event) {
     if (!keydown) {
-      var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
-
-      if (targetTile) {
+      if (selectedTile) {
         if (event.key == 'a') {
-          rotateAnim(targetTile, false)
+          rotateAnim(selectedTile, false)
         }
         else if (event.key == 'd') {
-          rotateAnim(targetTile, true)
+          rotateAnim(selectedTile, true)
         }
         else if (event.key == 's') {
           if (!view.onFrame) {
-            targetTile.scale(-1, 1);
+            selectedTile.scale(-1, 1);
           }
         }
         else if (event.key == 'f') {
-          var tileIndex = tiles.indexOf(targetTile);
-          targetTile.position = getSpawnPoint(tileIndex);
+          var tileIndex = tiles.indexOf(selectedTile);
+          selectedTile.position = getSpawnPoint(tileIndex);
         }
       }
       keydown = true;
