@@ -153,19 +153,30 @@ function updateGamestate(tiles1, tiles2, tile, gamestate) {
     return indexPoints;
   }
 
-  function validateIndexPoints(indexPoints) {
+  function validateIndexPoints(indexPoints, gamestate, tileCode) {
+    function illegalCoordinates(gamestate, player1) {
+      return []; // ! not implemented
+    }
+    console.log(gamestate)
     for (var i = 0; i < indexPoints.length; i++) {
       var indexPoint = indexPoints[i];
       if (indexPoint.x < 0 || indexPoint.x > 13 || indexPoint.y < 0 || indexPoint.y > 13) {
         return false;
-      } 
+      }
+      var player1 = true;
+      if (tileCode[0] == 'b') {
+        player1 = false;
+      }
+      if (illegalCoordinates(gamestate, player1).includes(indexPoint)) {
+        return false;
+      }
     }
     return true;
   }
 
   var indexPoints = getIndexPoints(topLeftPoints);
   var tileCode = getTileCode(tiles1, tiles2, tile);
-  if (!validateIndexPoints(indexPoints)) {
+  if (!validateIndexPoints(indexPoints, gamestate, tileCode)) {
     return false;
   }
 
@@ -173,11 +184,11 @@ function updateGamestate(tiles1, tiles2, tile, gamestate) {
     var indexPoint = indexPoints[i];
     gamestate[indexPoint.y][indexPoint.x] = tileCode
   }
-  
+
   return true;
 }
 
-function addListeners(tiles1, tiles2, gamestate, infoText) {
+function addListeners(tiles1, tiles2, gamestate, board, infoText) {
   function rotateAnim(tile, pos) {
     var counter = 0;
     if (!view.onFrame) {
@@ -256,7 +267,8 @@ function addListeners(tiles1, tiles2, gamestate, infoText) {
       if (targetTile) {
         var tileCode = getTileCode(tiles1, tiles2, targetTile);
         var rightColor = (tileCode[0] == 'r' && player1) || (tileCode[0] == 'b' && !player1);
-        if (rightColor) {
+        var tilePlaced = board.contains(targetTile.children[0].segments[0].point);
+        if (rightColor && !tilePlaced) {
           selectedTile = targetTile;
         }
       }
@@ -282,4 +294,4 @@ var tiles1 = getTiles();
 var tiles2 = getTiles();
 drawTiles(tiles1, tiles2);
 
-addListeners(tiles1, tiles2, gamestate, infoText);
+addListeners(tiles1, tiles2, gamestate, board, infoText);
