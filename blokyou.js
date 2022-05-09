@@ -48,6 +48,19 @@ function drawInfoText(infoText, player1) {
   }
 }
 
+function getSpawnPoint(tileIndex, player) {
+  var gridx = 4;
+  var colNumber = tileIndex % gridx;
+  var rowNumber = Math.floor(tileIndex / gridx);
+  var xCenter = colNumber * 3.5 * edgeSize + 2 * edgeSize;
+  var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
+  var offset = 0;
+  if (player == 2) {
+    offset = 990;
+  }
+  return new Point([xCenter + offset, yCenter]);
+}
+
 function getTiles() {
   var tileStrings = [
     "00",
@@ -85,19 +98,6 @@ function getTiles() {
 }
 
 function drawTiles(tiles, player) {
-  function getSpawnPoint(tileIndex) {
-    var gridx = 4;
-    var colNumber = tileIndex % gridx;
-    var rowNumber = Math.floor(tileIndex / gridx);
-    var xCenter = colNumber * 3.5 * edgeSize + 2 * edgeSize;
-    var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
-    var offset = 0;
-    if (player == 2) {
-      offset = 990;
-    }
-    return new Point([xCenter + offset, yCenter]);
-  }
-  
   for (var tileIndex = 0; tileIndex < 21; tileIndex++) {
     var tile = tiles[tileIndex];
     tile.fillColor = 'red';
@@ -105,7 +105,7 @@ function drawTiles(tiles, player) {
       tile.fillColor = '#2076e6'
     }
     tile.strokeColor = 'black';
-    tile.position = getSpawnPoint(tileIndex)
+    tile.position = getSpawnPoint(tileIndex, player)
   }
 }
 
@@ -156,7 +156,8 @@ function addListeners(tiles, board) {
         }
         else if (event.key == 'f') {
           var tileIndex = tiles.indexOf(selectedTile);
-          selectedTile.position = getSpawnPoint(tileIndex);
+          selectedTile.position = getSpawnPoint(tileIndex % 21, Math.floor(tileIndex / 21) + 1);
+          selectedTile = null;
         }
       }
       keydown = true;
@@ -199,7 +200,7 @@ drawInfoText(infoText, player1);
 (function () {
   var controls = new PointText(new Point(xMax / 2, 700));
   controls.justification = 'center';
-  controls.content = 'Left click to select tile, move mouse to move tile, left click again to drop it.\nFor selected tile: A and D to rotate, S to mirror across y, W to mirror across x.'
+  controls.content = 'Left click to select tile, move mouse to move tile, left click again to place tile.\nFor selected tile: A and D to rotate, S to mirror across y, W to mirror across x, F to return.'
   controls.fillColor = 'black'
 })();
 
