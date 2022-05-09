@@ -168,10 +168,12 @@ function updateGamestate(tiles1, tiles2, tile, gamestate) {
   if (!validateIndexPoints(indexPoints)) {
     return false;
   }
+
   for (var i = 0; i < indexPoints.length; i++) {
     var indexPoint = indexPoints[i];
     gamestate[indexPoint.y][indexPoint.x] = tileCode
   }
+  
   return true;
 }
 
