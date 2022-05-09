@@ -15,6 +15,10 @@ var selectedTile = null;
 var keydown = false;
 var player1 = true;
 
+function roundPoint(point) {
+  return new Point([Math.round(point.x), Math.round(point.y)])
+}
+
 function getBoard() {
   var boardPaths = []
   var gamestate = [] // 2d array of 0's, initial empty
@@ -143,7 +147,7 @@ function updateGamestate(tiles1, tiles2, tile, gamestate) {
     var indexPoints = [];
     for (var i = 0; i < topLeftPoints.length; i++) {
       var topLeftPoint = topLeftPoints[i];
-      var indexPoint = (topLeftPoint - boardTopLeft) / edgeSize;
+      var indexPoint = roundPoint((topLeftPoint - boardTopLeft) / edgeSize);
       indexPoints.push(indexPoint);
     }
     return indexPoints;
@@ -248,7 +252,11 @@ function addListeners(tiles1, tiles2, gamestate, infoText) {
     } else {
       var targetTile = tiles1.concat(tiles2).find(function (tile) { return tile.contains(mousePos) });
       if (targetTile) {
-        selectedTile = targetTile;
+        var tileCode = getTileCode(tiles1, tiles2, targetTile);
+        var rightColor = (tileCode[0] == 'r' && player1) || (tileCode[0] == 'b' && !player1);
+        if (rightColor) {
+          selectedTile = targetTile;
+        }
       }
     }
   });
