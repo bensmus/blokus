@@ -26,6 +26,13 @@ function getBoard() {
     var row = []
     for (var coli = 0; coli < 14; coli++) {
       var topleft = new Point([coli * edgeSize, rowi * edgeSize])
+      if ((rowi == 4 && coli == 4) || (rowi == 9 && coli == 9)) {
+        var startingCircle = new Path.Circle(
+          topleft + new Point([edgeSize / 2, edgeSize / 2]), 
+          edgeSize / 3)
+        console.log(startingCircle);
+        boardPaths.push(startingCircle);
+      }
       boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
       row.push(0)
     }
