@@ -17,14 +17,28 @@ var player1 = true;
 
 function getBoard() {
   var boardPaths = []
+  var gamestate = [] // 2d array of 0's, initial empty
   for (var rowi = 0; rowi < 14; rowi++) {
+    var row = []
     for (var coli = 0; coli < 14; coli++) {
       var topleft = new Point([coli * edgeSize, rowi * edgeSize])
       boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
+      row.push(0)
     }
+    gamestate.push(row);
   }
   var board = new Group(boardPaths)
-  return board;
+  return [board, gamestate];
+}
+
+function getTileCode(tiles1, tiles2, tile) {
+  var tileCode;
+  if (tiles1.indexOf(tile) >= 0) {
+    tileCode = 'r' + (tiles1.indexOf(tile) + 1) // r for red
+  } else {
+    tileCode =  'b' + (tiles2.indexOf(tile) + 1) // b for blue
+  }
+  return tileCode;
 }
 
 function drawBoard(board) {
@@ -48,14 +62,15 @@ function drawInfoText(infoText, player1) {
   }
 }
 
-function getSpawnPoint(tileIndex, player) {
+function getSpawnPoint(tileCode) {
+  var tileIndex = tileCode.slice(1) - 1;
   var gridx = 4;
   var colNumber = tileIndex % gridx;
   var rowNumber = Math.floor(tileIndex / gridx);
   var xCenter = colNumber * 3.5 * edgeSize + 2 * edgeSize;
   var yCenter = rowNumber * 5 * edgeSize + 2.5 * edgeSize;
   var offset = 0;
-  if (player == 2) {
+  if (tileCode[0] == 'b') {
     offset = 990;
   }
   return new Point([xCenter + offset, yCenter]);
@@ -97,19 +112,66 @@ function getTiles() {
   return tiles;
 }
 
-function drawTiles(tiles, player) {
-  for (var tileIndex = 0; tileIndex < 21; tileIndex++) {
-    var tile = tiles[tileIndex];
+function drawTiles(tiles1, tiles2) {
+  var allTiles = tiles1.concat(tiles2);
+  for (var tileIndex = 0; tileIndex < 42; tileIndex++) {
+    var tile = allTiles[tileIndex];
+    var tileCode = getTileCode(tiles1, tiles2, tile);
     tile.fillColor = 'red';
-    if (player == 2) {
+    if (tileCode[0] == 'b') {
       tile.fillColor = '#2076e6'
     }
     tile.strokeColor = 'black';
-    tile.position = getSpawnPoint(tileIndex, player)
+    tile.position = getSpawnPoint(tileCode)
   }
 }
 
-function addListeners(tiles, board) {
+function updateGamestate(tiles1, tiles2, tile, gamestate) {
+  function extractTopLeftPoints(tile) {
+    var topLeftPoints = []
+    for (var i = 0; i < tile.children.length; i++) {
+      var topleftPoint = tile.children[i].segments[1].point;
+      topLeftPoints.push(topleftPoint);
+    }
+    return topLeftPoints;
+  }
+
+  var topLeftPoints = extractTopLeftPoints(tile);
+
+  function getIndexPoints(topLeftPoints) {
+    var boardTopLeft = new Point((xMax / 2) - (14 * edgeSize / 2), (yMax / 2) - (14 * edgeSize / 2));
+    var indexPoints = [];
+    for (var i = 0; i < topLeftPoints.length; i++) {
+      var topLeftPoint = topLeftPoints[i];
+      var indexPoint = (topLeftPoint - boardTopLeft) / edgeSize;
+      indexPoints.push(indexPoint);
+    }
+    return indexPoints;
+  }
+
+  function validateIndexPoints(indexPoints) {
+    for (var i = 0; i < indexPoints.length; i++) {
+      var indexPoint = indexPoints[i];
+      if (indexPoint.x < 0 || indexPoint.x > 13 || indexPoint.y < 0 || indexPoint.y > 13) {
+        return false;
+      } 
+    }
+    return true;
+  }
+
+  var indexPoints = getIndexPoints(topLeftPoints);
+  var tileCode = getTileCode(tiles1, tiles2, tile);
+  if (!validateIndexPoints(indexPoints)) {
+    return false;
+  }
+  for (var i = 0; i < indexPoints.length; i++) {
+    var indexPoint = indexPoints[i];
+    gamestate[indexPoint.y][indexPoint.x] = tileCode
+  }
+  return true;
+}
+
+function addListeners(tiles1, tiles2, gamestate, infoText) {
   function rotateAnim(tile, pos) {
     var counter = 0;
     if (!view.onFrame) {
@@ -155,8 +217,8 @@ function addListeners(tiles, board) {
           }
         }
         else if (event.key == 'f') {
-          var tileIndex = tiles.indexOf(selectedTile);
-          selectedTile.position = getSpawnPoint(tileIndex % 21, Math.floor(tileIndex / 21) + 1);
+          var tileCode = getTileCode(tiles1, tiles2, selectedTile);
+          selectedTile.position = getSpawnPoint(tileCode);
           selectedTile = null;
         }
       }
@@ -177,22 +239,24 @@ function addListeners(tiles, board) {
       var y = tilePoint.y;
       var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
       selectedTile.translate(snapPoint - tilePoint);
+      var valid = updateGamestate(tiles1, tiles2, selectedTile, gamestate);
       selectedTile = null;
-      if (board.contains(tilePoint)) { //! not enough validation
+      if (valid) {
         player1 = !player1;
         drawInfoText(infoText, player1);
       }
-      return;
-    }
-    var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
-    if (targetTile) {
-      selectedTile = targetTile;
+    } else {
+      var targetTile = tiles1.concat(tiles2).find(function (tile) { return tile.contains(mousePos) });
+      if (targetTile) {
+        selectedTile = targetTile;
+      }
     }
   });
 }
 
-var board = getBoard();
-drawBoard(board)
+var board = getBoard()[0];
+var gamestate = getBoard()[1];
+drawBoard(board);
 
 var infoText = getInfoText();
 drawInfoText(infoText, player1); 
@@ -206,7 +270,6 @@ drawInfoText(infoText, player1);
 
 var tiles1 = getTiles();
 var tiles2 = getTiles();
-drawTiles(tiles1, 1);
-drawTiles(tiles2, 2);
+drawTiles(tiles1, tiles2);
 
-addListeners(tiles1.concat(tiles2), board, infoText);
+addListeners(tiles1, tiles2, gamestate, infoText);
