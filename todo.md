@@ -1,3 +1,5 @@
 Make 2 player local MVP
-- board state that gets updated and validated
-- user-facing movement instructions for rotating (a,d),  mirroring (s), home (f) and snap to grid (space)
+- board state data structure
+  - check respect of player turn order
+  - check valid placement
+  - score tracker

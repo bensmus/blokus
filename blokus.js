@@ -149,6 +149,11 @@ function addListeners(tiles, board) {
             selectedTile.scale(-1, 1);
           }
         }
+        else if (event.key == 'w') {
+          if (!view.onFrame) {
+            selectedTile.scale(1, -1);
+          }
+        }
         else if (event.key == 'f') {
           var tileIndex = tiles.indexOf(selectedTile);
           selectedTile.position = getSpawnPoint(tileIndex);
@@ -190,6 +195,13 @@ drawBoard(board)
 
 var infoText = getInfoText();
 drawInfoText(infoText, player1); 
+
+(function () {
+  var controls = new PointText(new Point(xMax / 2, 700));
+  controls.justification = 'center';
+  controls.content = 'Left click to select tile, move mouse to move tile, left click again to drop it.\nFor selected tile: A and D to rotate, S to mirror across y, W to mirror across x.'
+  controls.fillColor = 'black'
+})();
 
 var tiles1 = getTiles();
 var tiles2 = getTiles();
