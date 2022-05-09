@@ -13,8 +13,9 @@ view.on('mousemove', function(event) {
 
 var selectedTile = null;
 var keydown = false;
+var player1 = true;
 
-function drawBoard() {
+function getBoard() {
   var boardPaths = []
   for (var rowi = 0; rowi < 14; rowi++) {
     for (var coli = 0; coli < 14; coli++) {
@@ -22,10 +23,29 @@ function drawBoard() {
       boardPaths.push(new Path.Rectangle(topleft, new Size([edgeSize, edgeSize])))
     }
   }
-
   var board = new Group(boardPaths)
+  return board;
+}
+
+function drawBoard(board) {
   board.strokeColor = 'gainsboro'
   board.position = new Point([xMax / 2, yMax / 2])
+}
+
+function getInfoText() {
+  var infoText = new PointText(new Point(xMax / 2, 600));
+  infoText.justification = 'center';
+  return infoText;
+}
+
+function drawInfoText(infoText, player1) {
+  if (player1) {
+    infoText.fillColor = 'red';
+    infoText.content = 'Red player\'s turn';
+  } else {
+    infoText.fillColor = '#2076e6';
+    infoText.content = 'Blue player\'s turn';
+  }
 }
 
 function getTiles() {
@@ -89,7 +109,7 @@ function drawTiles(tiles, player) {
   }
 }
 
-function addListeners(tiles) {
+function addListeners(tiles, board) {
   function rotateAnim(tile, pos) {
     var counter = 0;
     if (!view.onFrame) {
@@ -152,6 +172,10 @@ function addListeners(tiles) {
       var snapPoint = new Point([getSnap(x, edgeSize), getSnap(y, edgeSize)]);
       selectedTile.translate(snapPoint - tilePoint);
       selectedTile = null;
+      if (board.contains(tilePoint)) { //! not enough validation
+        player1 = !player1;
+        drawInfoText(infoText, player1);
+      }
       return;
     }
     var targetTile = tiles.find(function (tile) { return tile.contains(mousePos) });
@@ -161,9 +185,15 @@ function addListeners(tiles) {
   });
 }
 
-drawBoard();
+var board = getBoard();
+drawBoard(board)
+
+var infoText = getInfoText();
+drawInfoText(infoText, player1); 
+
 var tiles1 = getTiles();
 var tiles2 = getTiles();
 drawTiles(tiles1, 1);
 drawTiles(tiles2, 2);
-addListeners(tiles1.concat(tiles2));
+
+addListeners(tiles1.concat(tiles2), board, infoText);
